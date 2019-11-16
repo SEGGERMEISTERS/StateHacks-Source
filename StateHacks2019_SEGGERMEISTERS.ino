@@ -3,7 +3,7 @@
 #include <DHT.h>
 #include <DHT_U.h>
 
-signed int VoltageInput = A0;
+const signed int VoltageInput = A0;
 float vOut = NULL;
 float vIn = NULL;
 float R1 = 30000;
@@ -12,7 +12,7 @@ signed int value = NULL;
 
 ///////////////////////////////
 
-signed int Gas = A1;
+const signed int Gas = A1;
 float gasValue = NULL;
 
 //////////////////////////
@@ -23,9 +23,14 @@ DHT_Unified dht(DHTPIN, DHTTYPE);
 
 /////////////////////////////////////
 
-signed int VibPin = 9;
+const signed int VibPin = 9;
 
 ////////////////////////////
+
+const signed int WaterPin = A2;
+signed int WaterValue = NULL;
+
+////////////////////////
 void setup() {
   pinMode(VoltageInput, INPUT);
   pinMode(Gas,INPUT);
@@ -33,6 +38,7 @@ void setup() {
   sensor_t sensor;
   dht.temperature().getSensor(&sensor);
   pinMode(VibPin, INPUT);
+  pinMode(WaterPin, INPUT);
   Serial.begin(9600);
   
 }
@@ -41,14 +47,14 @@ void loop() {
   value = analogRead(VoltageInput);
    vOut = (value * 5.0) / 1024.0; 
    vIn = vOut / (R2/(R1+R2)); 
-Serial.print("INPUT V= ");
-Serial.println(vIn,2);
-delay(1000);
+//Serial.print("INPUT V= ");
+//Serial.println(vIn);
+
 ////////////////////////////
 gasValue = analogRead(Gas);
-Serial.println("gas value = ");
-Serial.println(gasValue);
-delay(1000);
+//Serial.print("gas value = ");
+//Serial.println(gasValue);
+
 //////////////////////////
 sensors_event_t event;
   dht.temperature().getEvent(&event);
@@ -56,16 +62,33 @@ sensors_event_t event;
     Serial.println(F("Error reading temperature!"));
   }
   else {
-    Serial.print(F("Temperature: "));
-    Serial.print(event.temperature);
-    Serial.println(F("°C"));
+    //Serial.print(F("Temperature: "));
+    //Serial.print(event.temperature);
+    //Serial.println(F("°C"));
   }
-  delay(1000);
+  
   ///////////////////////////////
 
   signed int vibMeasure = TP_init();
-  Serial.println("Viberation = ");
-  Serial.println(vibMeasure);
+  //Serial.print("Viberation = ");
+  //Serial.println(vibMeasure);
+  
+  /////////////////////////////////
+  
+  WaterValue = analogRead(WaterPin);
+  //Serial.print("Water = ");
+  //Serial.println(WaterValue);
+  Serial.print(WaterValue);
+  Serial.print(",");
+  Serial.print(vibMeasure);
+  Serial.print(",");
+  Serial.print(event.temperature);
+  Serial.print(",");
+  Serial.print(gasValue);
+  Serial.print(",");
+  Serial.print(vIn);
+  Serial.print("\n");
+    delay(1000);
 
 }
 
